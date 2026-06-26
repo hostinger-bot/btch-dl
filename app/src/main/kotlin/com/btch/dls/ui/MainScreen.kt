@@ -702,13 +702,14 @@ fun MainScreen() {
     val api = remember { BtchDownloader() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
 
     var selectedPlatform by remember { mutableStateOf(platforms.first().first) }
     var url by remember { mutableStateOf("") }
     var result by remember { mutableStateOf<String?>(null) }
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
-    var isDarkMode by remember { mutableStateOf(false) }
+    var isDarkMode by remember { mutableStateOf(prefs.getBoolean("dark_mode", true)) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     val scheme = if (isDarkMode) DarkBlue else LightBlueWhite
@@ -729,7 +730,10 @@ fun MainScreen() {
                     },
                     actions = {
                         val rotation by animateFloatAsState(targetValue = if (isDarkMode) 180f else 0f, label = "dark_mode_rotation", animationSpec = tween(500))
-                        IconButton(onClick = { isDarkMode = !isDarkMode }) {
+                        IconButton(onClick = {
+                            isDarkMode = !isDarkMode
+                            prefs.edit().putBoolean("dark_mode", isDarkMode).apply()
+                        }) {
                             Icon(
                                 imageVector = FontAwesomeIcons.Solid.Adjust,
                                 contentDescription = "Toggle dark mode",
