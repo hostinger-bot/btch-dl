@@ -201,6 +201,22 @@ if "$cygwin" || "$msys" ; then
     done
 fi
 
+# Auto-detect AAPT2 on Termux (ARM): Maven AAPT2 is x86_64 and won't run.
+case "$(uname -o 2>/dev/null)" in
+  Android)
+    ANDROID_SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+    if [ -z "$ANDROID_SDK" ] && [ -f "$APP_HOME/local.properties" ]; then
+        ANDROID_SDK=$(sed -n 's/^sdk\.dir=//p' "$APP_HOME/local.properties" 2>/dev/null)
+    fi
+    if [ -n "$ANDROID_SDK" ]; then
+        AAPT2=$(find "$ANDROID_SDK/build-tools" -name aapt2 -type f 2>/dev/null | head -1)
+        if [ -n "$AAPT2" ]; then
+            set -- "-Pandroid.aapt2FromMavenOverride=$AAPT2" "$@"
+        fi
+    fi
+    ;;
+esac
+
 
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 DEFAULT_JVM_OPTS='-Dfile.encoding=UTF-8 "-Xmx64m" "-Xms64m"'
