@@ -1,55 +1,43 @@
 # Security Policy
 
-Learn about our security practices and how we protect our API, client library, and applications.
+## Supported Versions
 
-Last updated: May 24, 2026
+Only the latest published version receives security fixes.
 
-## 1. Infrastructure Security
-Our infrastructure is built to securely host and serve the public REST API and Web Interface:
-- Hosted on SOC 2 Type II compliant cloud providers with 24/7 physical security
-- Redundant multi-region deployment for high availability
-- Automated encrypted backups and disaster recovery procedures
-- Continuous vulnerability scanning and penetration testing
+| Version | Supported |
+|---------|-----------|
+| 1.2.x (latest) | ✅ |
+| < 1.2.0 | ❌ |
 
-## 2. Data in Transit & at Rest
-All API/Web traffic and stored logs are protected with enterprise-grade encryption:
-- TLS 1.3 enforced on all endpoints (HTTPS only)
-- AES-256 encryption for logs and temporary caches
-- Automatic certificate rotation via Let's Encrypt / Cloudflare
-- HSTS and Security Headers (CSP, XSS Protection) to prevent common web attacks
+## Reporting a Vulnerability
 
-## 3. API & UI Protection
-We protect our services from abuse and ensure fair usage:
-- Strict IP-based and header-based rate limiting
-- Automatic temporary blocks for malicious patterns
-- Request validation and payload size limits
-- Protection against XSS, CSRF, and SQL Injection on the Web Interface
-- Blocking of known malicious User-Agents and bot signatures
+**Do not open a public GitHub issue for security vulnerabilities.**
 
-## 4. Logging & Monitoring
-Security events are monitored in real time:
-- Centralized logging with tamper-proof storage
-- Real-time alerts for anomalies and attack patterns
-- Retention limited to 30 days, then automatically purged
-- Zero persistent storage of request bodies containing sensitive data
+Report privately via GitHub's built-in security advisory:  
+**https://github.com/hostinger-bot/btch-dl/security/advisories/new**
 
-## 5. Compliance & Standards
-We align with industry security and privacy standards:
-- SOC 2 Type II compliant infrastructure
-- GDPR-ready data handling practices
-- Regular third-party security audits
-- Transparent vulnerability disclosure policy
+Include in your report:
+- A clear description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (optional)
 
-## 6. Incident Response
-In case of a security incident:
-- 24/7 automated monitoring and on-call team
-- Rapid containment and mitigation within hours
-- Public disclosure if user data is affected
-- Post-incident report and preventive improvements
+You can expect an initial response within **72 hours**. If the vulnerability is confirmed, a patch will be prioritized for the next release.
 
-## 7. Responsible Disclosure
-Found a vulnerability? We encourage responsible disclosure:
-- Report securely by contacting our Security Team at: **[support@tioprm.eu.org](mailto:support@tioprm.eu.org)**
-- PGP key available on request
-- No legal action against good-faith researchers
-- Public acknowledgment (with consent)
+## Scope
+
+This repository contains the Android application and the Ktor client SDK. Security concerns most relevant to this project:
+
+- Malicious payloads returned by the backend (`backend1.tioo.eu.org`) passed unsanitized to the UI or client
+- Dependency vulnerabilities (reported via Dependabot)
+- Build pipeline or supply-chain attacks (e.g. compromised GitHub Actions build)
+
+Out of scope: vulnerabilities in the downstream platforms (Instagram, TikTok, YouTube, etc.) themselves.
+
+## Dependencies
+
+Dependency security is monitored automatically via **Dependabot**. If you discover a vulnerability in a dependency, please report it to that package's maintainer and open a Dependabot alert here if applicable.
+
+## Attribution
+
+Responsible disclosure is appreciated. Reporters of valid, confirmed vulnerabilities will be credited in the release notes unless anonymity is requested.
