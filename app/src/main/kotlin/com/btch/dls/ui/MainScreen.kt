@@ -968,7 +968,7 @@ fun MainScreen() {
                                 "btch-downloader",
                                 style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.clickable { uriHandler.openUri("https://tio.is-a.dev") }
+                                modifier = Modifier.clickable { uriHandler.openUri("https://github.com/hostinger-bot/btch-dl.git") }
                             )
                         }
                         Spacer(Modifier.height(16.dp))
