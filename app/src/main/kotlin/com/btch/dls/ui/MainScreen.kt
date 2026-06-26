@@ -124,7 +124,8 @@ private fun JsonObject.withoutMeta(): List<Map.Entry<String, JsonElement>> =
 
 private fun JsonElement?.asString(): String? {
     val s = if (this is JsonPrimitive && this.isString) this.content else null
-    return s?.replace("&amp;", "&")
+    val clean = s?.replace("&amp;", "&")
+    return if (clean != null && clean.startsWith("//")) "https:$clean" else clean
 }
 
 private val platformPatterns = listOf(
@@ -184,14 +185,13 @@ private fun JsonElement?.asObject(): JsonObject? = this as? JsonObject
 private fun extractThumbnail(obj: JsonObject): String? {
     val payload = obj["result"]?.asObject() ?: obj["data"]?.asObject() ?: obj
     for (key in thumbnailKeys) {
-        val el = payload[key]
-        if (el is JsonPrimitive && el.isString && isUrl(el.content)) return el.content.replace("&amp;", "&")
+        val url = payload[key]?.asString()
+        if (url != null && isUrl(url)) return url
     }
-    // Fallback: if 'images' exists and is an array, use the first image as thumbnail
     val images = payload["images"]?.asArray()
     if (images != null && images.isNotEmpty()) {
-        val first = images.firstOrNull()
-        if (first is JsonPrimitive && first.isString && isUrl(first.content)) return first.content.replace("&amp;", "&")
+        val url = images.firstOrNull()?.asString()
+        if (url != null && isUrl(url)) return url
     }
     return null
 }
@@ -343,25 +343,27 @@ private fun ContentField(key: String, value: JsonElement, context: Context, sugg
     when (value) {
         is JsonPrimitive -> when {
             value.isString -> {
-                val s = value.content
-                if (isUrl(s)) {
+                val s = value.asString()
+                if (s != null && isUrl(s)) {
                     val suggestedName = if (!suggestedNamePrefix.isNullOrBlank()) "${suggestedNamePrefix}_$key" else null
                     MediaDownloadRow(label = key, url = s, onDownload = { saveFile(context, s, suggestedName) })
                 }
-                else LabeledTextRow(key = key, value = s)
+                else if (s != null) LabeledTextRow(key = key, value = s)
             }
             value.booleanOrNull != null -> {} // skip booleans
             else -> {} // skip numbers
         }
         is JsonArray -> {
             if (value.isEmpty()) return
-            val first = value.firstOrNull()
-            if (first is JsonPrimitive && first.isString && isUrl(first.content)) {
+            val first = value.firstOrNull()?.asString()
+            if (first != null && isUrl(first)) {
                 value.forEachIndexed { i, el ->
-                    val u = el.jsonPrimitive.content
-                    val label = if (value.size > 1) "$key ${i + 1}" else key
-                    val suggestedName = if (!suggestedNamePrefix.isNullOrBlank()) "${suggestedNamePrefix}_$label" else null
-                    MediaDownloadRow(label = label, url = u, onDownload = { saveFile(context, u, suggestedName) })
+                    val u = el.asString()
+                    if (u != null && isUrl(u)) {
+                        val label = if (value.size > 1) "$key ${i + 1}" else key
+                        val suggestedName = if (!suggestedNamePrefix.isNullOrBlank()) "${suggestedNamePrefix}_$label" else null
+                        MediaDownloadRow(label = label, url = u, onDownload = { saveFile(context, u, suggestedName) })
+                    }
                 }
             }
         }
