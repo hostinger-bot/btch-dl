@@ -19,13 +19,19 @@ An open-source Android app for downloading media (video, audio, images) from 20+
 Grab the latest APK from [Releases](https://github.com/hostinger-bot/btch-dl/releases) and install it on your device.
 
 **Option 2 — Build from source**
+
 ```bash
 git clone https://github.com/hostinger-bot/btch-dl.git
-cd repo
-./gradlew :app:assembleDebug
-# APK is at app/build/outputs/apk/debug/app-debug.apk
-```
+cd btch-dl
 
+# Build Release APK (automatically signed and installable)
+./gradlew :app:assembleRelease
+# APK is generated at app/build/outputs/apk/release/app-release.apk
+
+# Build Debug APK
+./gradlew :app:assembleDebug
+# APK is generated at app/build/outputs/apk/debug/app-debug.apk
+```
 ### Ktor Client Library (Kotlin/JVM)
 
 Add to your `build.gradle.kts`:
